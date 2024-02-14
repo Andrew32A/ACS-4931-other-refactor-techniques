@@ -2,7 +2,7 @@
 # Move Field
 
 class Car:
-    def __init__(self, engine, wheels, cabin, tpms_di, fuel_tank):
+    def __init__(self, engine, wheels, cabin, fuel_tank):
         self.engine = engine
         # TODO: tpms is better to be in the Wheel class. 
         # Each wheel has a single tpms attached to it. 
@@ -23,22 +23,21 @@ class Wheel:
     #       initilaize the 'Wheel' object or you can create
     #       a setter method to set the tpms of the wheel. (you can do 
     #       both of course.)
-    def __init__(self, car = None, wheel_location = None):
+    def __init__(self, tpms, wheel_location = None, car = None):
         self.car = car
         self.wheel_location = wheel_location
+        self.tpms = tpms
 
     def install_tire(self):
         print('remove old tube.')
-         # TODO: Rewrite the following after moving tpms to the 'Wheel' class
-        print('cleaned tpms: ', 
-              self.car.tpms_di[self.wheel_location].get_serial_number, 
-              '.')
+        # TODO: Rewrite the following after moving tpms to the 'Wheel' class
+        print('cleaned tpms: ', self.tpms.get_serial_number(), '.')  # Use the wheel's own TPMS
         print('installed new tube.')        
         
     def read_tire_pressure(self):
         # TODO: After making tpms an attribute of 'Wheel' class,
         #       rewrite the following.
-        return self.car.tpms_di[self.wheel_location].get_pressure()
+        return self.tpms.get_pressure()  # Use the wheel's own TPMS
     
     def set_car(self, car):
         self.car = car
@@ -49,12 +48,12 @@ class Tpms:
     """
     def __init__(self, serial_number):
         self.serial_number = serial_number
-        self.sensor_transmit_range = 300 # [feet]
-        self.sensor_pressure_range = (8,300) # [PSI]
-        self.battery_life = 6 # [year]
+        self.sensor_transmit_range = 300
+        self.sensor_pressure_range = (8,300)
+        self.battery_life = 6
         
     def get_pressure(self):
-        return 3
+        return 33
     
     def get_serial_number(self):
         return self.serial_number
@@ -70,20 +69,23 @@ class FuelTank:
 class Cabin:
     def __init__(self):
         pass    
-    
 
 engine = Engine()
-# TODO: Rewrite the following after moving tpms to the 'Wheel' class.
-wheels = [Wheel(None, 'front-right'), Wheel(None, 'front-left'), 
-          Wheel(None, 'back-right'), Wheel(None, 'back-left')]
-
 cabin  = Cabin()
-
-tpms_di = {'front-right': Tpms(983408543), 'front-left':Tpms(4343083),
-               'back-right':Tpms(23654835), 'back_left':Tpms(3498857)}
-
 fuel_tank = FuelTank()
 
-my_car = Car(engine, wheels, cabin, tpms_di, fuel_tank)
+tpms_di = {
+    'front-right': Tpms(983408543), 
+    'front-left': Tpms(4343083),
+    'back-right': Tpms(23654835), 
+    'back-left': Tpms(3498857)
+}
 
+wheels = [
+    Wheel(tpms_di['front-right'], 'front-right'), 
+    Wheel(tpms_di['front-left'], 'front-left'),
+    Wheel(tpms_di['back-right'], 'back-right'), 
+    Wheel(tpms_di['back-left'], 'back-left')
+]
 
+my_car = Car(engine, wheels, cabin, fuel_tank)
